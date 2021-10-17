@@ -8,9 +8,12 @@ Examples:
 
 ```
 $ python saver.py -h
-    help message
 
-$ python saver.py -o w3school -u https://www.w3schools.com/
-    save html file of www.w3schools.com to local directory 'w3school'
-    save resource (img, css, js) to local directory 'w3school/w3school_files'
 ```
+print help message
+```
+$ python saver.py -o w3school -u https://www.w3schools.com/
+```
+save html file of www.w3schools.com to local directory 'w3school' and resource files(img, css, js) to 'w3school/w3school_files'
+    
+
