@@ -8,7 +8,6 @@ Examples:
 
 ```
 $ python saver.py -h
-
 ```
 print help message
 ```
