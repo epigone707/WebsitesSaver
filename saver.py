@@ -1,12 +1,13 @@
 import os
 import sys
 import requests
-from urllib.parse import urljoin, urlparse
+from urllib.parse import urljoin
 from bs4 import BeautifulSoup, Comment
 import cssutils
 import logging
 import datetime
 import argparse
+import re
 
 def saveFileInTag(soup, pagefolder, url, session, tag2find='img', inner='src'):
     """saves on specified `pagefolder` all tag2find objects"""
@@ -22,6 +23,8 @@ def saveFileInTag(soup, pagefolder, url, session, tag2find='img', inner='src'):
             # print(f"inner_attribute: {inner_attribute}")
             filename = os.path.basename(inner_attribute)
             # print(f"basename: {filename}")
+            if not filename:
+                continue
             filename = filename.split('?')[0]
             # print(f"filename:　{filename}")
             fileurl = urljoin(url, res.get(inner))
@@ -108,11 +111,19 @@ def saveFileInStyle(soup, pagefolder, url, session):
     return soup
 
 def addAnnotation(soup, url):
+    """
+    add a info about url and time on the top of the html file
+    """
     comment = Comment(f" \nsaved from url = {url}\ncurrent time = {datetime.datetime.now()}\ngithub: github.com/epigone707/WebsitesSaver/")
     soup.html.insert_before(comment)
     return soup
 
 def savePage(url, pagefilename='page'):
+    """
+    save the page
+    """
+    print("===================")
+    print(f"savePage({url}) start.")
     session = requests.Session()
     response = session.get(url)
     # soup = BeautifulSoup(response.text, features="lxml")
@@ -128,8 +139,8 @@ def savePage(url, pagefilename='page'):
     soup = addAnnotation(soup, url)
     with open(pagefilename+'/'+pagefilename+'.html', 'wb') as file:
         file.write(soup.prettify('utf-8'))
-    print("===================")
     print(f"savePage({url}) finish.")
+    print("===================")
     return soup
 
 
@@ -139,22 +150,26 @@ def main():
     # Initialize parser
     msg = "The WebsitesSaver download HTML of a given website and its links to images, CSS and javascript"
     parser = argparse.ArgumentParser(description = msg)
-    
     # Adding optional argument
-    parser.add_argument("-o", "--output", help = "Output directory")
-    parser.add_argument("-u", "--url", help = "target website url")
+    parser.add_argument("-u", "--url", help = "target url")
+    parser.add_argument("-l", "--urllist", help = "target urls list")
     # Read arguments from command line
     args = parser.parse_args()
-    outputPath = 'defaultOut'
-    target = 'https://www.w3schools.com/'
-    if args.output:
-        outputPath = args.output
-        print("outputPath: ", outputPath)
+    outputPath = []
+    targetUrls = []
     if args.url:
-        target = args.url
-    # soup = savePage('https://github.com/rajatomar788/pywebcopy', 'pywebcopy')
-    # soup = savePage('https://en.wikipedia.org/wiki/Main_Page', 'wiki')
-    soup = savePage(target, outputPath)
+        targetUrls.append(args.url)
+        outputPath.append(re.sub(r'[^a-zA-Z0-9]','',args.url))
+    if args.urllist:
+        url_file = open(args.urllist, "r")
+        targetUrls = url_file.read().splitlines()
+        for targetUrl in targetUrls:
+            print(targetUrl)
+            outputPath.append(re.sub(r'[^a-zA-Z0-9]','',targetUrl))
+    for idx,url in enumerate(targetUrls):
+        savePage(url, outputPath[idx])
+    
+
 
 if __name__ == '__main__':
     main()
