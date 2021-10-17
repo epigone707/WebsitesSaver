@@ -9,6 +9,12 @@ import datetime
 import argparse
 import re
 
+__author__ = 'Yanfu'
+__version__ = '1.0'
+__license__ = 'MIT'
+__url__ = 'https://github.com/epigone707/WebsitesSaver'
+__email__ = 'yanfuguo@umich.edu'
+
 def saveFileInTag(soup, pagefolder, url, session, tag2find='img', inner='src'):
     """saves on specified `pagefolder` all tag2find objects"""
     if not os.path.exists(pagefolder):
