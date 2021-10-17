@@ -5,8 +5,8 @@ from urllib.parse import urljoin, urlparse
 from bs4 import BeautifulSoup, Comment
 import cssutils
 import logging
-import time
 import datetime
+import argparse
 
 def saveFileInTag(soup, pagefolder, url, session, tag2find='img', inner='src'):
     """saves on specified `pagefolder` all tag2find objects"""
@@ -16,14 +16,14 @@ def saveFileInTag(soup, pagefolder, url, session, tag2find='img', inner='src'):
         try:
             if not res.has_attr(inner):  # check if inner tag (file object) exists
                 continue  # may or may not exist
-            print("===================")
-            print(f"res: {res}")
+            # print("===================")
+            # print(f"res: {res}")
             inner_attribute = res[inner]
-            print(f"inner_attribute: {inner_attribute}")
+            # print(f"inner_attribute: {inner_attribute}")
             filename = os.path.basename(inner_attribute)
-            print(f"basename: {filename}")
+            # print(f"basename: {filename}")
             filename = filename.split('?')[0]
-            print(f"filename:　{filename}")
+            # print(f"filename:　{filename}")
             fileurl = urljoin(url, res.get(inner))
             filepath = os.path.join(pagefolder, filename)
             # rename html ref so can move html and folder of files anywhere
@@ -108,7 +108,7 @@ def saveFileInStyle(soup, pagefolder, url, session):
     return soup
 
 def addAnnotation(soup, url):
-    comment = Comment(f" \nsaved from url = {url}\ncurrent time = {datetime.datetime.now()}\n")
+    comment = Comment(f" \nsaved from url = {url}\ncurrent time = {datetime.datetime.now()}\ngithub: github.com/epigone707/WebsitesSaver/")
     soup.html.insert_before(comment)
     return soup
 
@@ -133,6 +133,28 @@ def savePage(url, pagefilename='page'):
     return soup
 
 
-# soup = savePage('https://github.com/rajatomar788/pywebcopy', 'pywebcopy')
-# soup = savePage('https://en.wikipedia.org/wiki/Main_Page', 'wiki')
-soup = savePage('https://www.w3schools.com/', 'w3schools')
+
+
+def main():
+    # Initialize parser
+    msg = "The WebsitesSaver download HTML of a given website and its links to images, CSS and javascript"
+    parser = argparse.ArgumentParser(description = msg)
+    
+    # Adding optional argument
+    parser.add_argument("-o", "--output", help = "Output directory")
+    parser.add_argument("-u", "--url", help = "target website url")
+    # Read arguments from command line
+    args = parser.parse_args()
+    outputPath = 'defaultOut'
+    target = 'https://www.w3schools.com/'
+    if args.output:
+        outputPath = args.output
+        print("outputPath: ", outputPath)
+    if args.url:
+        target = args.url
+    # soup = savePage('https://github.com/rajatomar788/pywebcopy', 'pywebcopy')
+    # soup = savePage('https://en.wikipedia.org/wiki/Main_Page', 'wiki')
+    soup = savePage(target, outputPath)
+
+if __name__ == '__main__':
+    main()
