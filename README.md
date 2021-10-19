@@ -1,6 +1,6 @@
 # WebsitesSaver
 
-The WebsitesSaver can download/save the HTML files of given websites list and their corresponding resource files (images, CSS and javascript).
+The WebsitesSaver can download/save the HTML files of given websites list and their corresponding resource files (images, CSS and javascript). You can open those websites locally using your browser.
 
 # Command-line usage:
 
